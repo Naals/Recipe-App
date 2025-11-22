@@ -2,6 +2,7 @@
 
 import {Button, Input, Form} from "@heroui/react";
 import {useState} from "react";
+import {registerUser} from "@/actions/register";
 
 interface Props {
     onClose: () => void;
@@ -17,13 +18,16 @@ const RegistrationForm = ({onClose}: Props) => {
     })
 
     const validateEmail = (value: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
         return emailRegex.test(value);
     }
 
     const handelSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log('form submitted:', formData);
+
+        const user = await registerUser(formData);
+        console.log(user);
 
         onClose();
     }
@@ -43,7 +47,7 @@ const RegistrationForm = ({onClose}: Props) => {
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
                 validate={(value: string) => {
                     if (!value) return "Email is required";
-                    if (validateEmail(value)) return "Email is incorrect";
+                    if (!validateEmail(value)) return "Email is incorrect";
                     return null;
                 }}
             />
@@ -61,7 +65,7 @@ const RegistrationForm = ({onClose}: Props) => {
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
                 validate={(value: string) => {
                     if (!value) return "Password is required";
-                    if (value.length >= 6) return "Password length must longer than 6!";
+                    if (value.length < 6) return "Password length must longer than 6!";
                     return null;
                 }}
             />
@@ -76,7 +80,7 @@ const RegistrationForm = ({onClose}: Props) => {
                     inputWrapper: 'bg-default-100',
                     input: 'text-sm focus:outline-none'
                 }}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                 validate={(value: string) => {
                     if (!value) return "Confirm password is required";
                     if (value !== formData.password) return "Password is incorrect";
