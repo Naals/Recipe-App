@@ -3,6 +3,7 @@
 import {Button, Input, Form} from "@heroui/react";
 import {useState} from "react";
 import {unlink} from "node:fs";
+import {signInWithCredentials} from "@/actions/sign-in";
 
 interface Props {
     onClose: () => void;
@@ -19,6 +20,10 @@ const LoginForm = ({onClose}: Props) => {
     const handelSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log('form submitted:', formData);
+
+        await signInWithCredentials(formData.email, formData.password);
+
+        window.location.reload();
 
         onClose();
     }

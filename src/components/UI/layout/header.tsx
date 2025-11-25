@@ -6,6 +6,9 @@ import {usePathname} from "next/navigation";
 import React from "react";
 import RegistrationModal from "@/components/UI/modals/registration.modals";
 import LoginModal from "@/components/UI/modals/login.modals";
+import {signOutFunc} from "@/actions/sign-out";
+import {useSession} from "next-auth/react";
+import {useAuthStore} from "@/store/auth.store";
 
 export const Logo = () => {
     return (
@@ -23,7 +26,7 @@ export default function Header() {
 
     const [isRegistrationOpen, setIsRegistrationOpen] = React.useState(false);
     const [isLoginOpen, setIsLoginOpen] = React.useState(false);
-
+    const {isAuth, session, status, setAuthState} = useAuthStore();
 
     const pathname = usePathname();
 
@@ -32,6 +35,25 @@ export default function Header() {
         {href: '/ingredients', label: 'Ingredients'},
         {href: '/about', label: 'About Us'},
     ]
+
+    const handleSignOut = async () => {
+        try {
+            await signOutFunc();
+        } catch (err) {
+            console.log("Error: " + err);
+        }
+
+        setAuthState("unauthenticated", null)
+    }
+
+    const handleLogIn = () => {
+        try {
+            setAuthState("authenticated", session)
+            setIsLoginOpen(true);
+        } catch (err) {
+            console.log("Error: " + err);
+        }
+    }
 
     const getNavItems = () => {
         return (navItems.map((item) => {
@@ -54,6 +76,12 @@ export default function Header() {
             )
         }))
     }
+
+    if (status === 'loading') {
+        return (
+            <p>Loading...</p>
+        )
+    }
     return (
         <Navbar className='h-[60px]'>
 
@@ -69,30 +97,45 @@ export default function Header() {
             </NavbarContent>
 
             <NavbarContent justify="end">
-                <NavbarItem className="hidden lg:flex">
-                    <Button
-                    as={Link}
-                    href='#'
-                    color='secondary'
-                    variant='flat'
-                    onPress={() => setIsLoginOpen(true)}>
-                        Login
-                    </Button>
-                </NavbarItem>
-                <NavbarItem>
-                    <Button
-                        as={Link}
-                        href='#'
-                        color='primary'
-                        variant='flat'
-                        onPress={() => setIsRegistrationOpen(true)}>
-                        Register
-                    </Button>
-                </NavbarItem>
+                {isAuth ?
+                    <NavbarItem className="hidden lg:flex">
+                        <Button
+                            as={Link}
+                            href='#'
+                            color='secondary'
+                            variant='flat'
+                            onPress={handleSignOut}>
+                            Log out
+                        </Button>
+                    </NavbarItem>
+                    :
+                    <>
+                        <NavbarItem className="hidden lg:flex">
+                            <Button
+                                as={Link}
+                                href='#'
+                                color='secondary'
+                                variant='flat'
+                                onPress={() => setIsLoginOpen(true)}>
+                                Login
+                            </Button>
+                        </NavbarItem>
+                        <NavbarItem>
+                            <Button
+                                as={Link}
+                                href='#'
+                                color='primary'
+                                variant='flat'
+                                onPress={handleLogIn}>
+                                Register
+                            </Button>
+                        </NavbarItem>
+                    </>
+                }
             </NavbarContent>
 
-            <RegistrationModal isOpen={isRegistrationOpen} onClose={() => setIsRegistrationOpen(false)} />
-            <LoginModal onClose={() => setIsLoginOpen(false)}  isOpen={isLoginOpen}/>
+            <RegistrationModal isOpen={isRegistrationOpen} onClose={() => setIsRegistrationOpen(false)}/>
+            <LoginModal onClose={() => setIsLoginOpen(false)} isOpen={isLoginOpen}/>
         </Navbar>
     );
 }
