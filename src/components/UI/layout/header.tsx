@@ -7,7 +7,6 @@ import React from "react";
 import RegistrationModal from "@/components/UI/modals/registration.modals";
 import LoginModal from "@/components/UI/modals/login.modals";
 import {signOutFunc} from "@/actions/sign-out";
-import {useSession} from "next-auth/react";
 import {useAuthStore} from "@/store/auth.store";
 
 export const Logo = () => {
@@ -26,7 +25,7 @@ export default function Header() {
 
     const [isRegistrationOpen, setIsRegistrationOpen] = React.useState(false);
     const [isLoginOpen, setIsLoginOpen] = React.useState(false);
-    const {isAuth, session, status, setAuthState} = useAuthStore();
+    const {isAuth, status, setAuthState} = useAuthStore();
 
     const pathname = usePathname();
 
@@ -48,7 +47,7 @@ export default function Header() {
 
     const handleLogIn = () => {
         try {
-            setAuthState("authenticated", session)
+
             setIsLoginOpen(true);
         } catch (err) {
             console.log("Error: " + err);
@@ -116,7 +115,7 @@ export default function Header() {
                                 href='#'
                                 color='secondary'
                                 variant='flat'
-                                onPress={() => setIsLoginOpen(true)}>
+                                onPress={handleLogIn}>
                                 Login
                             </Button>
                         </NavbarItem>
@@ -126,7 +125,7 @@ export default function Header() {
                                 href='#'
                                 color='primary'
                                 variant='flat'
-                                onPress={handleLogIn}>
+                                onPress={() => setIsRegistrationOpen(true)}>
                                 Register
                             </Button>
                         </NavbarItem>

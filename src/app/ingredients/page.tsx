@@ -1,7 +1,13 @@
+import Title from "@/components/UI/layout/title";
+import IngredientForm from "@/forms/ingredient.form";
+
 const IngredientPage = () => {
     return (
-        <h1>Ingredients</h1>
-    )
-}
+        <>
+            <Title title="Ingredients" />
+            <IngredientForm />
+        </>
+    );
+};
 
-export default IngredientPage
+export default IngredientPage;

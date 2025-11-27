@@ -2,7 +2,6 @@
 
 import {Button, Input, Form} from "@heroui/react";
 import {useState} from "react";
-import {unlink} from "node:fs";
 import {signInWithCredentials} from "@/actions/sign-in";
 
 interface Props {
@@ -21,9 +20,9 @@ const LoginForm = ({onClose}: Props) => {
         e.preventDefault();
         console.log('form submitted:', formData);
 
-        await signInWithCredentials(formData.email, formData.password);
+        const result = await signInWithCredentials(formData.email, formData.password);
+        console.log(result);
 
-        window.location.reload();
 
         onClose();
     }
