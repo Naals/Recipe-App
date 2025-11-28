@@ -20,9 +20,9 @@ const LoginForm = ({onClose}: Props) => {
         e.preventDefault();
         console.log('form submitted:', formData);
 
-        const result = await signInWithCredentials(formData.email, formData.password);
-        console.log(result);
-
+        await signInWithCredentials(formData.email, formData.password);
+        
+        window.location.reload();
 
         onClose();
     }

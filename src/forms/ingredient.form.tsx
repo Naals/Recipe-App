@@ -1,25 +1,47 @@
 'use client'
 
-import {React, useState} from "react";
+import {useState, useTransition} from "react";
 import {Button, Form, Input, Select, SelectItem} from "@heroui/react";
 import {CATEGORY_OPTIONS, UNIT_OPTIONS} from "@/constants/select-options";
+import {useIngredientStore} from "@/store/ingredient.store";
+
+const initalState = {
+    name: "",
+    category: "",
+    unit: "",
+    pricePerUnit: null as number | null,
+    description: "",
+}
 
 const IngredientForm = () => {
-    const [formData, setFormData] = useState({
-        name: "",
-        category: "",
-        unit: "",
-        pricePerUnit: null as number | null,
-        description: "",
-    })
+    const [error, setError] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition();
+    const {addIngredient} = useIngredientStore();
+    const [formData, setFormData] = useState(initalState);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (formData: FormData) => {
         console.log('form submitted:', formData);
+
+        startTransition(async () => {
+
+            await addIngredient(formData);
+            const storeError = useIngredientStore.getState().error;
+
+            if(storeError){
+                setError(storeError)
+            } else {
+                setError(null);
+                setFormData(initalState)
+            }
+
+        })
+
+
     }
 
     return (
-        <Form className="w-[400px]" onSubmit={handleSubmit}>
+        <Form className="w-full" action={handleSubmit}>
+            {error && <p className='text-red-500 mb-4'>{error}</p>}
             <Input
                 isRequired
                 name="name"
@@ -72,9 +94,10 @@ const IngredientForm = () => {
                             value: "truncate",
                             selectorIcon: "text-black",
                         }}
-                        onChange={(e) =>
-                            setFormData({...formData, unit: e.target.value})
-                        }
+                        onSelectionChange={(keys) => {
+                            const value = Array.from(keys)[0] as string;
+                            setFormData({...formData, unit: value});
+                        }}
                     >
                         {UNIT_OPTIONS.map((option) => (
                             <SelectItem key={option.value} className="text-black">
@@ -83,6 +106,7 @@ const IngredientForm = () => {
                         ))}
                     </Select>
                 </div>
+
                 <div className="w-1/3">
                     <Input
                         isRequired
@@ -133,7 +157,7 @@ const IngredientForm = () => {
             />
 
             <div className="flex w-full items-center justify-end">
-                <Button color="primary" type="submit">
+                <Button color="primary" type="submit" isLoading={isPending}>
                     Добавить ингредиент
                 </Button>
             </div>
