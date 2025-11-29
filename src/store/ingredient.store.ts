@@ -41,15 +41,16 @@ export const useIngredientStore = create<IngredientState>((set) => ({
         set({isLoading: true, error: null});
 
         try{
-            const result = await createIngredient(formData);
+            const result = await createIngredient(formData) as {success: boolean; ingredient: Ingredient; error?: string} ;
 
             if(result.success) {
+                console.log('Ingredient added to store:', result.ingredient);
                 set((state) => ({
-                    ingredients: [...state.ingredients, result.ingredients],
+                    ingredients: [...state.ingredients, result.ingredient],
                     isLoading: false
                 }))
             } else {
-                set({error: result.error, loading: false});
+                set({error: result.error, isLoading: false});
             }
         } catch (error) {
             console.log("error" + error);

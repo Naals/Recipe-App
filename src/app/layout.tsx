@@ -38,11 +38,15 @@ export default async function RootLayout({
         <Providers>
             <SessionProvider session={session}>
                 <AppLoader>
-                    <Header/>
-                    <main className='flex flex-col items-center justify-start h-[100vh] w-full'>
-                        {children}
-                    </main>
-                    <Footer/>
+                    <div className="flex min-h-screen flex-col justify-between">
+                        <div className="flex flex-col">
+                            <Header/>
+                            <main className='flex flex-col items-center justify-start h-[100vh] w-full'>
+                                {children}
+                            </main>
+                        </div>
+                        <Footer/>
+                    </div>
                 </AppLoader>
             </SessionProvider>
         </Providers>
