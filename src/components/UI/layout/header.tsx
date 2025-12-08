@@ -56,10 +56,8 @@ export default function Header() {
 
     const getNavItems = () => {
         return (navItems.filter((item) => {
-            if(item.href === '/ingredients' && !isAuth){
-                return false;
-            }
-            return true;
+            return !(item.href === '/ingredients' && !isAuth);
+
         }).map((item) => {
             const isActive = pathname === item.href
             return (
@@ -92,7 +90,7 @@ export default function Header() {
             <NavbarBrand>
                 <Link href="/public" className='flex gap-1'>
                     <Logo/>
-                    <p className="font-bold text-inherit">Tatarian kitchen</p>
+                    <p className="font-bold text-inherit">Italian kitchen</p>
                 </Link>
             </NavbarBrand>
 
